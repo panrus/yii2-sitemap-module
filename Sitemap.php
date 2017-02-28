@@ -21,7 +21,7 @@ use yii\caching\Cache;
 class Sitemap extends Module
 {
     //About limit - https://support.google.com/webmasters/answer/75712
-    const URLS_ON_PAGE = 1000;
+    public $urls_on_page = 1000;
 
     public $controllerNamespace = 'katech91\sitemap\controllers';
 
@@ -114,17 +114,17 @@ class Sitemap extends Module
     private function generateSitemap($model, $name = '', $page = null)
     {
         $countUrls = $model::find()->count();
-        if ($countUrls > self::URLS_ON_PAGE) {
+        if ($countUrls > $this->urls_on_page) {
             if (is_numeric($page) && $page >= 0) {
                 //Create a page of sitemaps
 
-                $urls = $model->generateSiteMap(self::URLS_ON_PAGE, $page);
+                $urls = $model->generateSiteMap($this->urls_on_page, $page);
                 $sitemapData = $this->createControllerByID('default')->renderPartial('sitemap', [
                     'urls' => $urls
                 ]);
             } else {
                 //Create common sitemap
-                $pages = floor($countUrls / self::URLS_ON_PAGE);
+                $pages = floor($countUrls / $this->urls_on_page);
                 foreach (range(0, $pages) as $index) {
                     $urls[]['loc'] = '/sitemap_' . $name . '_' . $index . '.xml';
                 }
